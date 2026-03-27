@@ -5,7 +5,7 @@ import { FormModal } from "@/components/FormModal";
 import { Header } from "@/components/Header";
 import { Table } from "@/components/Table";
 import { ITransaction, TotalCard } from "@/types/transaction";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 const transactions:ITransaction[] = [
   {
@@ -45,10 +45,33 @@ const transactions:ITransaction[] = [
 export default function Home() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [transactionData, setTransactionData] = useState(transactions);
+  const [editingTransaction, setEditingTransaction] = useState<ITransaction | null>(null);
 
   const handleAddTransaction = (transaction: ITransaction) => {
-    setTransactionData( (prevState)=> [...prevState, transaction]);
+    setTransactionData((prevState)=> [...prevState, transaction]);
   }
+
+  const handleDelete = (id: string) => {
+    const confirmDelete = confirm("Tem certeza que deseja excluir?");
+    if (confirmDelete) {
+      const updated = transactionData.filter(t => t.id !== id);
+      setTransactionData(updated);
+    }
+  };
+
+  const handleEdit = (transaction: ITransaction) => {
+    setEditingTransaction(transaction);
+    setIsFormModalOpen(true);
+  };
+
+  const handleUpdateTransaction = (updatedTransaction: ITransaction) => {
+    const updatedList = transactionData.map(t =>
+      t.id === updatedTransaction.id ? updatedTransaction : t
+    );
+
+    setTransactionData(updatedList);
+    setEditingTransaction(null);
+  };
 
   const calculaTotal = useMemo(() => {
     const totals = transactionData.reduce<TotalCard>((acc, transaction) => {
@@ -64,18 +87,32 @@ export default function Home() {
 
     return totals;
   }, [transactionData]);
-  
+ 
   return (
     <div className="h-full min-h-screen">
-      <Header handleOpenFormModal={() => setIsFormModalOpen(true)}/>
+      <Header handleOpenFormModal={() => {
+        setEditingTransaction(null);
+        setIsFormModalOpen(true);
+      }}/>
       <BodyContainer>
          <CardContainer totalValues={calculaTotal} />
-         <Table data={transactionData} />
+         <Table 
+           data={transactionData} 
+           onDelete={handleDelete}
+           onEdit={handleEdit}
+         />
       </BodyContainer>
-      {isFormModalOpen && <FormModal 
-          closeModal={() => setIsFormModalOpen(false)} 
-          title="Criar Transação" 
-          addTransaction={handleAddTransaction} />}
+      {isFormModalOpen && (
+        <FormModal
+          closeModal={() => {
+            setIsFormModalOpen(false);
+            setEditingTransaction(null);
+          }}
+          title={editingTransaction ? "Editar Transação" : "Criar Transação"}
+          addTransaction={editingTransaction ? handleUpdateTransaction : handleAddTransaction}
+          initialData={editingTransaction}
+        />
+      )}
     </div>
   );
 }
