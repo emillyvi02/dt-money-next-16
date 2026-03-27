@@ -8,7 +8,7 @@ export type TableProps = {
 }
 
 export const Table = ({ data, onDelete, onEdit }: TableProps) => {
-    return <>
+    return (
         <table className="w-full mt-16 border-separate border-spacing-y-2">
             <thead>
                 <tr>
@@ -26,7 +26,9 @@ export const Table = ({ data, onDelete, onEdit }: TableProps) => {
                      {transaction.title}
                    </td> 
 
-                   <td className={px-4 py-4 whitespace-nowrap ${transaction.type === "INCOME"? "text-income": "text-outcome"} bg-white text-right}>
+                   <td className={`px-4 py-4 whitespace-nowrap ${
+                     transaction.type === "INCOME" ? "text-income" : "text-outcome"
+                   } bg-white text-right`}>
                      {formatPrice(transaction.price)}
                    </td> 
 
@@ -51,5 +53,6 @@ export const Table = ({ data, onDelete, onEdit }: TableProps) => {
                ))} 
             </tbody>
         </table>
-    </>
+    )
 }
+
