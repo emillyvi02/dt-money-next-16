@@ -5,14 +5,16 @@ import { TransactionType } from "@/types/transaction";
 import { TransactionFormData, transactionSchema, defaultValues } from "./schema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect } from "react";
 
 export type FormModalProps = {
    title: string;
    closeModal: () => void;
    addTransaction: (transaction: ITransaction) => void;
+   initialData?: ITransaction | null;
 }
 
-export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps) => {
+export const FormModal = ({ title, closeModal, addTransaction, initialData }: FormModalProps) => {
   
   const {
     handleSubmit,
@@ -24,15 +26,30 @@ export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps)
     resolver: yupResolver(transactionSchema),
     defaultValues
   })  
+
+  useEffect(() => {
+    if (initialData) {
+      setValue("title", initialData.title);
+      setValue("price", initialData.price);
+      setValue("category", initialData.category);
+      setValue("type", initialData.type);
+    }
+  }, [initialData, setValue]);
+
   const handleTypeChange = (type: TransactionType) => {
     setValue("type", type);
   }
 
   const handleSubmitForm = (data: TransactionFormData) => {
-    addTransaction(data as ITransaction);
+    const transaction: ITransaction = {
+      ...data,
+      id: initialData ? initialData.id : String(Date.now()),
+      data: initialData ? initialData.data : new Date(),
+    };
+
+    addTransaction(transaction);
     closeModal();
   }
-
 
   const type = watch("type");
 
@@ -108,8 +125,6 @@ export const FormModal = ({ title, closeModal, addTransaction }: FormModalProps)
                 </div>
            </div>
         </div> 
-         
-
     </div>
   )
 }
