@@ -45,9 +45,20 @@ const transactions:ITransaction[] = [
 export default function Home() {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [transactionData, setTransactionData] = useState(transactions);
+  const [selectedTransaction, setSelectedTransaction] = useState<ITransaction | null>(null);
 
   const handleAddTransaction = (transaction: ITransaction) => {
-    setTransactionData( (prevState)=> [...prevState, transaction]);
+    setTransactionData(prev => [...prev, transaction]);
+  }
+
+  const handleDeleteTransaction = (id: string) => {
+    setTransactionData(prev => prev.filter(t => t.id !== id));
+  }
+
+  const handleEditTransaction = (updatedTransaction: ITransaction) => {
+    setTransactionData(prev =>
+      prev.map(t => t.id === updatedTransaction.id ? updatedTransaction : t)
+    );
   }
 
   const calculaTotal = useMemo(() => {
@@ -67,15 +78,38 @@ export default function Home() {
   
   return (
     <div className="h-full min-h-screen">
-      <Header handleOpenFormModal={() => setIsFormModalOpen(true)}/>
+      <Header handleOpenFormModal={() => {
+        setSelectedTransaction(null);
+        setIsFormModalOpen(true);
+      }}/>
+
       <BodyContainer>
          <CardContainer totalValues={calculaTotal} />
-         <Table data={transactionData} />
+
+         <Table 
+            data={transactionData} 
+            onDelete={handleDeleteTransaction}
+            onEdit={(transaction) => {
+              setSelectedTransaction(transaction);
+              setIsFormModalOpen(true);
+            }}
+         />
       </BodyContainer>
-      {isFormModalOpen && <FormModal 
-          closeModal={() => setIsFormModalOpen(false)} 
-          title="Criar Transação" 
-          addTransaction={handleAddTransaction} />}
+
+      {isFormModalOpen && (
+        <FormModal 
+          closeModal={() => {
+            setIsFormModalOpen(false);
+            setSelectedTransaction(null);
+          }} 
+          title={selectedTransaction ? "Editar Transação" : "Criar Transação"} 
+          addTransaction={
+            selectedTransaction ? handleEditTransaction : handleAddTransaction
+          }
+          initialData={selectedTransaction}
+        />
+      )}
     </div>
   );
 }
+
