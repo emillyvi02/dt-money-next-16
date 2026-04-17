@@ -14,27 +14,38 @@ export type FormModalProps = {
    initialData?: ITransaction | null;
 }
 
-export const FormModal = ({ title, closeModal, addTransaction, initialData }: FormModalProps) => {
-  
+export const FormModal = ({
+  title,
+  closeModal,
+  addTransaction,
+  initialData
+}: FormModalProps) => {
+
   const {
     handleSubmit,
     register,
-    formState: { errors},
+    formState: { errors },
     setValue,
-    watch
+    watch,
+    reset
   } = useForm<TransactionFormData>({
     resolver: yupResolver(transactionSchema),
     defaultValues
-  })  
+  });
 
+  // 🔥 CORREÇÃO IMPORTANTE: reset correto ao abrir editar/criar
   useEffect(() => {
     if (initialData) {
-      setValue("title", initialData.title);
-      setValue("price", initialData.price);
-      setValue("category", initialData.category);
-      setValue("type", initialData.type);
+      reset({
+        title: initialData.title,
+        price: initialData.price,
+        category: initialData.category,
+        type: initialData.type,
+      });
+    } else {
+      reset(defaultValues);
     }
-  }, [initialData, setValue]);
+  }, [initialData, reset]);
 
   const handleTypeChange = (type: TransactionType) => {
     setValue("type", type);
@@ -43,7 +54,7 @@ export const FormModal = ({ title, closeModal, addTransaction, initialData }: Fo
   const handleSubmitForm = (data: TransactionFormData) => {
     const transaction: ITransaction = {
       ...data,
-      id: initialData ? initialData.id : String(Date.now()),
+      id: initialData ? initialData.id : crypto.randomUUID(),
       data: initialData ? initialData.data : new Date(),
     };
 
@@ -55,76 +66,76 @@ export const FormModal = ({ title, closeModal, addTransaction, initialData }: Fo
 
   return (
     <div className="relative z-10 min-w-xl">
-       <div className="fixed inset-0 bg-gray-700 opacity-75" />
+      <div className="fixed inset-0 bg-gray-700 opacity-75" />
 
-       <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
-           <div className="flex min-h-full items-center justify-center p-4">
-                <div className="relative transform overflow-hidden rounded-lg bg-modal text-left shadow-xl sm:w-full sm:max-w-lg">
-                    
-                    <button 
-                      type="button"
-                      className="absolute top-0 right-0 mt-4 mr-5 text-gray-400 hover:text-gray-600"
-                      onClick={closeModal}
-                    >
-                        <span className="text-2xl">&times;</span>
-                    </button>
+      <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4">
 
-                    <div className="px-6 pt-6">
-                        <h1 className="font-semibold text-title text-2xl">
-                          {title}
-                        </h1>
-                    </div>
-                    
-                    <form 
-                      className="flex flex-col gap-4 px-6 mt-4 mb-6"
-                      onSubmit={handleSubmit(handleSubmitForm)}
-                    >
-                        <Input 
-                           type="text"
-                           placeholder="Nome"   
-                           {...register("title")}
-                           error={errors.title?.message}
-                        />
+          <div className="relative transform overflow-hidden rounded-lg bg-modal text-left shadow-xl sm:w-full sm:max-w-lg">
 
-                        <Input 
-                          type="number"
-                          placeholder="Preço"   
-                          {...register("price")}
-                          error={errors.price?.message}
-                        />
+            <button
+              type="button"
+              className="absolute top-0 right-0 mt-4 mr-5 text-gray-400 hover:text-gray-600"
+              onClick={closeModal}
+            >
+              <span className="text-2xl">&times;</span>
+            </button>
 
-                        <TransactionSwitcher 
-                          type={type as TransactionType}
-                          handleTypeChange={handleTypeChange}
-                        />
+            <div className="px-6 pt-6">
+              <h1 className="font-semibold text-title text-2xl">
+                {title}
+              </h1>
+            </div>
 
-                        {errors.type && (
-                          <span className="text-red-500">
-                            {errors.type.message}
-                          </span>
-                        )}
+            <form
+              className="flex flex-col gap-4 px-6 mt-4 mb-6"
+              onSubmit={handleSubmit(handleSubmitForm)}
+            >
 
-                        <Input 
-                           type="text"
-                           placeholder="Categoria"  
-                           {...register("category")} 
-                           error={errors.category?.message}
-                        />
-                         
-                        <button 
-                           type="submit"
-                           className="mt-6 w-full rounded-md bg-income text-white py-3 font-semibold hover:opacity-80"
-                        >
-                           Confirmar     
-                        </button> 
-                    </form>
+              <Input
+                type="text"
+                placeholder="Nome"
+                {...register("title")}
+                error={errors.title?.message}
+              />
 
-                </div>
-           </div>
-        </div> 
+              <Input
+                type="number"
+                placeholder="Preço"
+                {...register("price")}
+                error={errors.price?.message}
+              />
+
+              <TransactionSwitcher
+                type={type as TransactionType}
+                handleTypeChange={handleTypeChange}
+              />
+
+              {errors.type && (
+                <span className="text-red-500">
+                  {errors.type.message}
+                </span>
+              )}
+
+              <Input
+                type="text"
+                placeholder="Categoria"
+                {...register("category")}
+                error={errors.category?.message}
+              />
+
+              <button
+                type="submit"
+                className="mt-6 w-full rounded-md bg-income text-white py-3 font-semibold hover:opacity-80"
+              >
+                {initialData ? "Salvar alterações" : "Confirmar"}
+              </button>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
     </div>
-  )
-}
-
-
-
+  );
+};
