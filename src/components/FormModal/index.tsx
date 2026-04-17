@@ -1,18 +1,17 @@
-import { ITransaction } from "@/types/transaction";
+import { ITransaction, TransactionType } from "@/types/transaction";
 import { Input } from "../Form/Input";
 import { TransactionSwitcher } from "../TransactionSwitcher";
-import { TransactionType } from "@/types/transaction";
 import { TransactionFormData, transactionSchema, defaultValues } from "./schema";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useEffect } from "react";
 
 export type FormModalProps = {
-   title: string;
-   closeModal: () => void;
-   addTransaction: (transaction: ITransaction) => void;
-   initialData?: ITransaction | null;
-}
+  title: string;
+  closeModal: () => void;
+  addTransaction: (transaction: ITransaction) => void;
+  initialData?: ITransaction | null;
+};
 
 export const FormModal = ({
   title,
@@ -33,7 +32,6 @@ export const FormModal = ({
     defaultValues
   });
 
-  
   useEffect(() => {
     if (initialData) {
       reset({
@@ -49,18 +47,19 @@ export const FormModal = ({
 
   const handleTypeChange = (type: TransactionType) => {
     setValue("type", type);
-  }
+  };
 
   const handleSubmitForm = (data: TransactionFormData) => {
     const transaction: ITransaction = {
       ...data,
+      type: data.type as TransactionType,
       id: initialData ? initialData.id : crypto.randomUUID(),
       data: initialData ? initialData.data : new Date(),
     };
 
     addTransaction(transaction);
     closeModal();
-  }
+  };
 
   const type = watch("type");
 
