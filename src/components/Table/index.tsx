@@ -8,6 +8,15 @@ export type TableProps = {
 }
 
 export const Table = ({ data, onDelete, onEdit }: TableProps) => {
+
+    const handleDelete = (id: string) => {
+        const confirmDelete = confirm("Tem certeza que deseja excluir esta transação?");
+        
+        if (confirmDelete) {
+            onDelete(id);
+        }
+    }
+
     return (
         <table className="w-full mt-16 border-separate border-spacing-y-2">
             <thead>
@@ -19,6 +28,7 @@ export const Table = ({ data, onDelete, onEdit }: TableProps) => {
                    <th className="px-4 text-left text-table-header text-base font-medium">Ações</th> 
                 </tr>
             </thead> 
+
             <tbody>
                {data.map(transaction => (
                 <tr key={transaction.id} className="h-16">
@@ -41,13 +51,21 @@ export const Table = ({ data, onDelete, onEdit }: TableProps) => {
                    </td>
 
                    <td className="px-4 py-4 whitespace-nowrap text-title bg-white rounded-r-lg">
-                     <button onClick={() => onEdit(transaction)}>
-                       Editar
-                     </button>
+                     <div className="flex gap-2">
+                        <button 
+                          onClick={() => onEdit(transaction)}
+                          className="text-blue-500 hover:underline"
+                        >
+                          Editar
+                        </button>
 
-                     <button onClick={() => onDelete(transaction.id)}>
-                       Excluir
-                     </button>
+                        <button 
+                          onClick={() => handleDelete(transaction.id)}
+                          className="text-red-500 hover:underline"
+                        >
+                          Excluir
+                        </button>
+                     </div>
                    </td>
                 </tr>
                ))} 
@@ -55,4 +73,3 @@ export const Table = ({ data, onDelete, onEdit }: TableProps) => {
         </table>
     )
 }
-
