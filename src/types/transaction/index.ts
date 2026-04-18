@@ -4,7 +4,7 @@ export type ITransaction = {
     price: number;
     category: string;
     type: TransactionType;
-    data: Date;
+    date: Date;
 }
 
 export type TransactionType = "INCOME" | "OUTCOME";
