@@ -47,7 +47,7 @@ export const Table = ({ data, onDelete, onEdit }: TableProps) => {
                    </td>
 
                    <td className="px-4 py-4 whitespace-nowrap text-title bg-white">
-                     {formatDate(transaction.data)}
+                     {formatDate(transaction.date)}
                    </td>
 
                    <td className="px-4 py-4 whitespace-nowrap text-title bg-white rounded-r-lg">
