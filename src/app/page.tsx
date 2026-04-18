@@ -7,14 +7,14 @@ import { Table } from "@/components/Table";
 import { ITransaction, TotalCard } from "@/types/transaction";
 import { useMemo, useState } from "react";
 
-const transactions:ITransaction[] = [
+const transactions: ITransaction[] = [
   {
     id: "1",
     title: "Salário",
     price: 5000,
     category: "Trabalho",
     type: "INCOME",
-    data: new Date("2024-06-01"),
+    date: new Date("2024-06-01"), 
   },
   {
     id: "2",
@@ -22,7 +22,7 @@ const transactions:ITransaction[] = [
     price: 1500,
     category: "Moradia",
     type: "OUTCOME",
-    data: new Date("2024-06-05"),
+    date: new Date("2024-06-05"), 
   },
   {
     id: "3",
@@ -30,7 +30,7 @@ const transactions:ITransaction[] = [
     price: 300,
     category: "Alimentação",
     type: "OUTCOME",
-    data: new Date("2024-06-10"),
+    date: new Date("2024-06-10"), 
   },
   {
     id: "4",
@@ -38,7 +38,7 @@ const transactions:ITransaction[] = [
     price: 1200,
     category: "Trabalho",
     type: "INCOME",
-    data: new Date("2024-06-15"),
+    date: new Date("2024-06-15"), 
   }
 ];
 
@@ -71,7 +71,7 @@ export default function Home() {
         acc.total -= transaction.price;
       }
       return acc;
-    }, { total: 0, income: 0, outcome: 0 })
+    }, { total: 0, income: 0, outcome: 0 });
 
     return totals;
   }, [transactionData]);
@@ -84,16 +84,16 @@ export default function Home() {
       }}/>
 
       <BodyContainer>
-         <CardContainer totalValues={calculaTotal} />
+        <CardContainer totalValues={calculaTotal} />
 
-         <Table 
-            data={transactionData} 
-            onDelete={handleDeleteTransaction}
-            onEdit={(transaction) => {
-              setSelectedTransaction(transaction);
-              setIsFormModalOpen(true);
-            }}
-         />
+        <Table 
+          data={transactionData} 
+          onDelete={handleDeleteTransaction}
+          onEdit={(transaction) => {
+            setSelectedTransaction(transaction);
+            setIsFormModalOpen(true);
+          }}
+        />
       </BodyContainer>
 
       {isFormModalOpen && (
@@ -112,4 +112,3 @@ export default function Home() {
     </div>
   );
 }
-
