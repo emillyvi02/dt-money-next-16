@@ -54,7 +54,7 @@ export const FormModal = ({
       ...data,
       type: data.type as TransactionType,
       id: initialData ? initialData.id : crypto.randomUUID(),
-      data: initialData ? initialData.data : new Date(),
+      date: initialData ? initialData.date : new Date(),
     };
 
     addTransaction(transaction);
